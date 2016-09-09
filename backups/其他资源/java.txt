@@ -1,0 +1,119 @@
+var canvas;
+var canvasColor;
+var ctx;
+var ctxColor;
+var bMouseDown = false;
+var selColorR = 0;
+var selColorG = 195;
+var selColorB = 135;
+
+var BubbleBrush = {
+    // inner variables
+    iPrevX : 0,
+    iPrevY : 0,
+
+    // initialization function
+    init: function () {
+        ctx.globalCompositeOperation = 'source-over'; //'lighter' is nice too
+        ctx.lineWidth = 1;
+        ctx.strokeStyle = 'rgba(0, 0, 0, 0.2)';
+        ctx.lineWidth = 2;
+    },
+
+    startCurve: function (x, y) {
+        this.iPrevX = x;
+        this.iPrevY = y;
+        ctx.fillStyle = 'rgba(' + selColorR + ', ' + selColorG + ', ' + selColorB + ', 0.9)';
+    },
+
+    draw: function (x, y) {
+        var iXAbs = Math.abs(x - this.iPrevX);
+        var iYAbs = Math.abs(y - this.iPrevY);
+        iXAbs = (iXAbs > 30) ? 30 : iXAbs;
+        iYAbs = (iYAbs > 30) ? 30 : iYAbs;
+
+        if (iXAbs > 10 || iYAbs > 10) {
+            ctx.beginPath();
+            ctx.arc(this.iPrevX, this.iPrevY, (iXAbs + iYAbs) * 0.5, 0, Math.PI*2, false);
+            ctx.fill();
+            ctx.stroke();
+            this.iPrevX = x;
+            this.iPrevY = y;
+        }
+    }
+};
+
+$(function(){
+    // creating canvas objects
+    canvas = document.getElementById('panel');
+    ctx = canvas.getContext('2d');
+
+    canvasColor = document.getElementById('color');
+    ctxColor = canvasColor.getContext('2d');
+
+    drawGradients(ctxColor);
+
+    BubbleBrush.init();
+
+    $('#color').mousemove(function(e) { // mouse move handler
+        var canvasOffset = $(canvasColor).offset();
+        var canvasX = Math.floor(e.pageX - canvasOffset.left);
+        var canvasY = Math.floor(e.pageY - canvasOffset.top);
+
+        var imageData = ctxColor.getImageData(canvasX, canvasY, 1, 1);
+        var pixel = imageData.data;
+
+        var pixelColor = 'rgba('+pixel[0]+', '+pixel[1]+', '+pixel[2]+', '+pixel[3]+')';
+        $('#preview').css('backgroundColor', pixelColor);
+    });
+
+    $('#color').click(function(e) { // mouse click handler
+        var canvasOffset = $(canvasColor).offset();
+        var canvasX = Math.floor(e.pageX - canvasOffset.left);
+        var canvasY = Math.floor(e.pageY - canvasOffset.top);
+
+        var imageData = ctxColor.getImageData(canvasX, canvasY, 1, 1);
+        var pixel = imageData.data;
+
+        var pixelColor = 'rgba('+pixel[0]+', '+pixel[1]+', '+pixel[2]+', '+pixel[3]+')';
+        $('#pick').css('backgroundColor', pixelColor);
+
+        selColorR = pixel[0];
+        selColorG = pixel[1];
+        selColorB = pixel[2];
+    }); 
+
+    $('#panel').mousedown(function(e) { // mouse down handler
+        bMouseDown = true;
+        var canvasOffset = $(canvas).offset();
+        var canvasX = Math.floor(e.pageX - canvasOffset.left);
+        var canvasY = Math.floor(e.pageY - canvasOffset.top);
+
+        BubbleBrush.startCurve(canvasX, canvasY, false, false, false, false, false, false, canvasX, canvasY, 0, 0);
+    });
+    $('#panel').mouseup(function(e) { // mouse up handler
+        bMouseDown = false;
+    });
+    $('#panel').mousemove(function(e) { // mouse move handler
+        if (bMouseDown) {
+            var canvasOffset = $(canvas).offset();
+            var canvasX = Math.floor(e.pageX - canvasOffset.left);
+            var canvasY = Math.floor(e.pageY - canvasOffset.top);
+
+            BubbleBrush.draw(canvasX, canvasY, false, false, false, false, false, false, canvasX, canvasY, 0, 0);
+        }
+    });
+});
+
+function drawGradients() {
+    var grad = ctxColor.createLinearGradient(20, 0, canvasColor.width - 20, 0);
+    grad.addColorStop(0, 'red');
+    grad.addColorStop(1 / 6, 'orange');
+    grad.addColorStop(2 / 6, 'yellow');
+    grad.addColorStop(3 / 6, 'green');
+    grad.addColorStop(4 / 6, 'aqua');
+    grad.addColorStop(5 / 6, 'blue');
+    grad.addColorStop(1, 'purple');
+    ctxColor.fillStyle=grad;
+    ctxColor.fillRect(0, 0, canvasColor.width, canvasColor.height);
+}

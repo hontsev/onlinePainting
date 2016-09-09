@@ -1,0 +1,539 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html>
+<head>
+<style type="text/css">
+	.container{
+
+	   color: #000;
+	   margin: 10px 10px 10px 10px;
+	   width:1200px;
+	   height:630px;
+	   position:relative;
+	   overflow: hidden;
+
+	}
+	.canvas{
+
+	   position:absolute;
+	   top:0px;
+	   border:1px #000 solid;
+	   box-shadow:2px 2px 2px #444444;
+	   cursor:crosshair;
+
+	}
+	#canvas_color {
+	   border:1px #000 solid;
+	   box-shadow:2px 2px 2px #444444;
+	   cursor:crosshair;	
+	   width = 150px;
+	   height = 150px;
+	}
+        .column1 {
+
+	   position:relative;
+	   border:1px #000 solid;
+	   display:inline;
+	   padding-left:10px;
+           float:left;
+           width:230px;
+	   height:550px;
+
+        }
+        .column2 {
+
+	   border:1px #000 solid;
+	   position:relative;
+	   display:inline;
+           float:left;
+           padding-left:0px;
+           width:700px;
+	   height:550px;
+
+	}
+        .column3 {
+
+	   border:1px #000 solid;
+	   position:relative;
+	   display:inline;
+           float:left;
+           padding-left:10px;
+           width:200px;
+	   height:550px;
+
+	}
+        .column2 > div {
+
+          margin-bottom:10px;
+
+	}
+	.button1 {
+
+	   width : 80px;
+	   height : 40px;
+
+	}
+	.button2 {
+
+	   width : 20px;
+	   height : 20px;
+
+	}
+	#pick,#pick2{float:left;
+          background-color:rgb(0, 0, 0);
+          border:1px #000 solid;
+          box-shadow:2px 3px 3px #444444;
+          height:40px;
+          width:80px;
+          border-radius:3px;
+          -moz-border-radius:3px;
+          -webkit-border-radius:3px;
+
+        }
+</style>
+<script type="text/javascript" src="jquery.js">
+</script>
+ 
+<script type="text/javascript" src="farbtastic.js">
+</script>
+ 
+<script type="text/javascript" charset="utf-8">
+ 
+ $(document).ready(function() 
+{
+   
+ $('#demo').hide();
+    
+$('#picker').farbtastic('#color');
+ 
+ });
+ 
+</script>
+
+
+<link rel="stylesheet" href="farbtastic.css" type="text/css" />
+ 
+</head>
+<body>
+<div class="container">
+	<div class="column1">
+		(￣ˇ￣)╭ロ ☆ ロ╮(￣ˇ￣)</br></br>
+		<div style = "position:relative;display:block;width=150;height=150;">
+			<div id="picker"></div>
+
+
+		</div>
+		</br></br></br>
+		<div>
+			当前工具：
+			<div id="nowtool" style="display:inline">无</div>
+		</br></br>
+		<div>
+			<button id="b1" class="button1" type="button" >铅笔</button>
+			</br>
+			<button id="b2" class="button1" type="button" >橡皮</button>
+			</br>
+			<button id="b3" class="button1" type="button" >清空</button>
+		</div>
+		</br>
+		<div>
+			画笔大小：
+			<input id="pradius" type="text" value="1" oninput="changeradius1()" onpropertychange="changeradius2()" style = "width:35px"/>
+			</br>
+			<input type="button" class="button2" value="-" onclick="pradius1()"/>
+			<input type="button" class="button2" value="+" onclick="pradius2()"/>
+		</div></br>
+		<div>
+			橡皮大小：
+			<input id="pradius2" type="text" value="10" oninput="changeradius3()" onpropertychange="changeradius4()" style = "width:35px"/>
+			</br>
+			<input type="button" class="button2" value="-" onclick="pradius3()"/>
+			<input type="button" class="button2" value="+" onclick="pradius4()"/>
+		</div>
+		</div>
+	</div>
+	<div class="column2">
+		<div>
+			<canvas id="canvas" class="canvas" width="700" height="550">Σ(っ°Д °;)っ不支持画布！</canvas>
+			<canvas id="canvas_temp" class="canvas" width="700" height="550"></canvas>
+		</div>
+	</div>
+	<div class="column3">
+		<div>
+			<div id="main_layout" style="width:300px; float:left;">
+    			<div style="width:300px; float:left;">
+    			   <div id="chatContent" style="height:400px; width:200px;border:solid 1px #000;overflow: scroll"></div>
+			   <div>昵称<input id="txtName" type="text" value=""/></div>
+			   <div>消息<input id="txtMsg" type="text" value="" onkeydown="beforesend()"/>
+			   </br><input type="button" class="button1" value="发送" onclick="send()"/>
+			   </div>
+    			</div>    			
+  		  </div>
+		</div>
+	</div>
+	<div>
+		<div id="infodiv" style="width:500px;">调试信息</div>
+	</div>
+</div>
+
+
+
+
+
+
+
+
+
+
+<script src="jquery.min.js"></script>
+<script type="text/javascript"> 
+
+ $(document).ready(function() 
+{
+   
+ $('#demo').hide();
+    
+$('#picker').farbtastic('#color');
+ 
+ });
+ 
+
+var hostname = location.hostname,
+serverurl = "ws://127.0.0.1:8000/",
+connection,chatContent,chatBox,uname;
+
+function appendChat(msg)//在屏幕区域的输出
+{	chatContent.html(chatContent.html()+msg+'</br>')	}
+
+	    $(function()
+	    {
+		chatContent = $("#chatContent");
+		chatBox = $("#txtMsg");
+		uname = $("#txtName");
+		pradius = $("#pradius");
+		pradiusera = $("#pradius2");
+	        window.WebSocket = window.WebSocket || window.MozWebSocket;
+	        connection = new WebSocket(serverurl);			
+	        connection.onopen = function(){
+			var msg = "已与服务器建立连接";
+	                //log(msg);		
+			appendChat(msg);
+	        };
+	        connection.onerror = function(error)
+	        {
+			var msg = "接收或发送消息时遇到了错误";		
+			appendChat(msg);
+	            //log("接收或发送消息时遇到了错误");
+	        };
+	        connection.onmessage = function(message)
+	        {        
+	            try 
+	            {
+/*
+ 	      |------a-----b------c---------d-------e1---e2----e3--e4--f------g-------h-------|
+	      |-----a1----a2-----a3--------a4------a5_1------a5_4-----a6-----a7------a8-------|
+信息中的信息   1 通信 - 信息主体 
+	       2 绘画 附加值 笔类型 图层属性 笔半径   笔颜色RGBA      坐标x，  坐标y，  其他。
+	       3 系统信息 值
+	      |-----a1----a2-----a3--------a4------(a5_1-----a5_4----)a6-----a7------a8-------|
+*/
+		var msg = message.data;
+		var px,py,colorr,colorg,colorb,colora,radius,layers,pentype,msgtype,msgvalue,pvalue;
+		var a1=msg.indexOf('a');
+		var a2=msg.indexOf('b');
+		var a3=msg.indexOf('c');
+		var a4=msg.indexOf('d');
+		var a5_1=msg.indexOf('e1');
+		var a5_2=msg.indexOf('e2');
+		var a5_3=msg.indexOf('e3');
+		var a5_4=msg.indexOf('e4');
+		var a6=msg.indexOf('f');
+		var a7=msg.indexOf('g');
+		var a8=msg.indexOf('h');
+		msgtype=msg.substring(0,a1);//笔类型
+
+if(msgtype == 1){//传送文字信息
+	msgvalue=msg.substring(a1+1);
+	appendChat(msgvalue);
+}
+else if(msgtype == 2){//传送画图信息
+	pvalue=msg.substring(a1+1,a2);//附加值,1：画笔起始；2：画笔中段；3：画笔结束
+	px=msg.substring(a6+1,a7);//x坐标
+	py=msg.substring(a7+1,a8);//y坐标
+	colorr=msg.substring(a5_1+2,a5_2);//以下是RGBA
+	colorg=msg.substring(a5_2+2,a5_3);
+	colorb=msg.substring(a5_3+2,a5_4);
+	colora=msg.substring(a5_4+2,a6);
+	layers=msg.substring(a3+1,a4);//图层
+	radius=msg.substring(a4+1,a5_1);//笔半径
+	infodiv.innerHTML="半径："+radius+"坐标x："+px+"坐标y："+py+"附加值："+pvalue+"RGBA:"+colorr+":"+colorg+":"+colorb+":"+colora;
+	pentype=msg.substring(a2+1,a3);//笔类型
+    if(pentype == 1){//铅笔
+	if(pvalue == 1){
+		//画笔起始
+		_context.beginPath();
+		_context.arc(px,py,radius/2,0,2*Math.PI);
+		_context.fill();
+		_context.beginPath();
+		_context.moveTo(px,py);
+		//_context.lineWidth = radius;
+		_context.fillStyle = 'rgba(' + colorr + ', ' + colorg + ', ' + colorb + ', 1)';
+		_context.strokeStyle = 'rgba(' + colorr + ', ' + colorg + ', ' + colorb + ', 1)';
+		}
+	else if(pvalue == 2){	
+		//画笔中段
+		_context.lineWidth = radius;
+		_context.lineTo(px,py);
+		_context.stroke();
+		_context.beginPath();
+		_context.arc(px,py,radius/2,0,2*Math.PI);
+		_context.fill();
+		_context.beginPath();
+		_context.moveTo(px,py);
+		}
+	else if(pvalue == 3){
+		//画笔结束
+		_context.lineWidth = radius;
+		_context.lineTo(px,py);
+		_context.stroke();
+		_context.beginPath();
+		_context.arc(px,py,radius/2,0,2*Math.PI);
+		_context.fill();
+		_context.beginPath();
+		_context.moveTo(px,py);
+		_canvas.onmousemove=null;
+		_canvas.onmouseup=null;
+		}
+     }
+     else if(pentype == 2){//橡皮
+	if(pvalue == 1){
+		//起始
+		//updata();
+		//context.beginPath();
+		_context.beginPath();
+		//_context.clearRect(0, 0, canvas.width, canvas.height);
+		_context.clearRect(px-radius/2,py-radius/2,radius,radius);
+		_context.moveTo(px,py);
+		}
+	else if(pvalue == 2){	
+		//中段
+		_context.clearRect(px-radius/2,py-radius/2,radius,radius);
+		//_context.stroke();
+		}
+	else if(pvalue == 3){
+		//结束
+		_canvas.onmousemove=null;
+		_canvas.onmouseup=null;
+		//updata();
+		}
+     }
+}
+else if(msgtype == 3){//读取命令
+	msgvalue=msg.substring(a1+1);
+	if(msgvalue == 1){//清屏
+	var msg = "已经清空画布ww";	
+	appendChat(msg);
+	context.beginPath();
+	context.closePath();
+	_context.beginPath();
+	_context.closePath();
+	context.clearRect(0, 0, canvas.width, canvas.height);
+	_context.clearRect(0, 0, _canvas.width, _canvas.height);
+	}
+	            } 
+
+}
+	            catch (e) 
+	            {
+			var msg = "不能被正常解析的数据:  "+message.data;		
+			appendChat(msg);
+	                //log('不能被正常解析的数据：', message.data);
+	                return;
+	            }
+	        };
+		connection.onclose = function(e)
+		{log(e);}			
+	    });
+
+function send(){//传输文字
+	if(chatBox.val() && uname.val()){
+		connection.send( '1'+'a'+'['+uname.val()+']'+chatBox.val()+'\n');
+		chatBox.val("");
+	}	
+}
+//------------------------------------------------------------------------------------------------
+function pradius1(){//笔半径减少
+	var value = pradius.val();
+	value = parseInt(value) - 1;
+	changeradiusfinal(value);
+}
+function pradius2(){//笔半径增加
+	var value = pradius.val();
+	value = parseInt(value) + 1;
+	changeradiusfinal(value);
+}
+
+function changeradius1(){ // Firefox, Google Chrome, Opera, Safari, Internet Explorer from version 9
+	changeradiusfinal(event.target.value);
+}
+function changeradius2(){ // Internet Explorer
+	changeradiusfinal(event.srcElement.value);
+}
+
+function changeradiusfinal(theradius){// 判定填写值是否越界ww
+	var thevalue = parseInt(theradius);
+	if(thevalue > 0 && thevalue < 100){
+		Radius  = thevalue;
+	}
+	else if(thevalue >= 100){
+		Radius  = 100;
+	}
+	else {
+		Radius  = 1;
+	}
+	pradius.val(Radius);
+	infodiv.innerHTML="笔半径："+Radius;
+}
+//-----------------------------------------------------------------------------------------------
+
+function pradius3(){//笔半径减少
+	var value = pradiusera.val();
+	value = parseInt(value) - 1;
+	changeradiusfinal2(value);
+}
+function pradius4(){//笔半径增加
+	var value = pradiusera.val();
+	value = parseInt(value) + 1;
+	changeradiusfinal2(value);
+}
+
+function changeradius3(){ // Firefox, Google Chrome, Opera, Safari, Internet Explorer from version 9
+	changeradiusfinal2(event.target.value);
+}
+function changeradius4(){ // Internet Explorer
+	changeradiusfinal2(event.srcElement.value);
+}
+
+function changeradiusfinal2(theradius){// 判定填写值是否越界ww
+	var thevalue = parseInt(theradius);
+	if(thevalue > 0 && thevalue < 100){
+		Radius2  = thevalue;
+	}
+	else if(thevalue >= 100){
+		Radius2  = 100;
+	}
+	else {
+		Radius2  = 1;
+	}
+	pradiusera.val(Radius2);
+	infodiv.innerHTML="橡皮半径："+Radius2;
+}
+//-----------------------------------------------------------------------------------------------
+
+function disconnect(){connection.close();}
+
+function beforesend(e){//在输入栏回车时的处理
+	var e = e || window.event;
+	var currKey = e.keyCode || e.which || e.charCode;
+	infodiv.innerHTML="按键："+currKey;
+	if(currKey == 13)
+	{send();}
+}
+
+var infodiv=document.getElementById('infodiv');
+var canvas = document.getElementById('canvas');
+var context = canvas.getContext('2d');
+var _canvas = document.getElementById('canvas_temp');
+var _context = _canvas.getContext('2d');
+
+var pen= document.getElementById('b1');
+var era= document.getElementById('b2');
+var clear=document.getElementById('b3');
+var nowtool=document.getElementById('nowtool');
+var Layers,Radius,Radius2,ColorR,ColorG,ColorB,ColorA,Pentype;//图层，半径，R,G,B,A，笔类型
+_context.lineJoin = "round";
+Layers = 1;
+Radius = 1;
+Radius2 = 10;
+ColorR = 233;
+ColorG = 111;
+ColorB = 0;
+ColorA = 1;
+Pentype = 1;
+
+
+
+
+clear.onclick=function(){//画布清空
+	connection.send('3'+'a'+1);
+};
+
+pen.onclick=function(e){
+	nowtool.innerHTML="铅笔";
+	Pentype = 1;
+	reset();
+	_canvas.onmousedown=function (e)
+	{
+		context.beginPath();
+		_context.beginPath();
+		var nowx=e.layerX;
+		var nowy=e.layerY;
+			connection.send('2'+'a'+'1'+'b'+Pentype+'c'+Layers+'d'+Radius+'e1'+ColorR+'e2'+ColorG+'e3'+ColorB+'e4'+ColorA+'f'+nowx+'g'+nowy+'h');
+		_canvas.onmousemove=function(e){
+			var nowx=e.layerX;
+			var nowy=e.layerY;
+			connection.send('2'+'a'+'2'+'b'+Pentype+'c'+Layers+'d'+Radius+'e1'+ColorR+'e2'+ColorG+'e3'+ColorB+'e4'+ColorA+'f'+nowx+'g'+nowy+'h');
+		};
+		_canvas.onmouseup=function(e){
+			var nowx=e.layerX;
+			var nowy=e.layerY;
+			connection.send('2'+'a'+'3'+'b'+Pentype+'c'+Layers+'d'+Radius+'e1'+ColorR+'e2'+ColorG+'e3'+ColorB+'e4'+ColorA+'f'+nowx+'g'+nowy+'h');
+		};
+	};
+};
+
+era.onclick=function(e){
+	nowtool.innerHTML="橡皮";
+	Pentype = 2;
+	reset();
+	_canvas.onmousedown=function (e)
+	{
+		var nowx=e.layerX;
+		var nowy=e.layerY;
+		connection.send('2'+'a'+'1'+'b'+Pentype+'c'+Layers+'d'+Radius2+'e1'+ColorR+'e2'+ColorG+'e3'+ColorB+'e4'+ColorA+'f'+nowx+'g'+nowy+'h');
+		_canvas.onmousemove=function(e){
+			var nowx=e.layerX;
+			var nowy=e.layerY;
+			connection.send('2'+'a'+'2'+'b'+Pentype+'c'+Layers+'d'+Radius2+'e1'+ColorR+'e2'+ColorG+'e3'+ColorB+'e4'+ColorA+'f'+nowx+'g'+nowy+'h');
+		};
+		_canvas.onmouseup=function(e){
+			var nowx=e.layerX;
+			var nowy=e.layerY;
+			connection.send('2'+'a'+'3'+'b'+Pentype+'c'+Layers+'d'+Radius2+'e1'+ColorR+'e2'+ColorG+'e3'+ColorB+'e4'+ColorA+'f'+nowx+'g'+nowy+'h');
+		};
+	};
+
+};
+
+function reset()
+{
+	_canvas.onmousedown=null;
+	_canvas.onmouseup=null;
+	_canvas.onmousemove=null;
+};
+function updata()
+{ 
+	context.drawImage(_canvas, 0, 0);
+	_context.clearRect(0, 0, canvas.width, canvas.height);
+	context.beginPath();
+	context.closePath();
+	_context.beginPath();
+	_context.closePath();
+};
+
+
+</script>
+
+</body>
+</html>

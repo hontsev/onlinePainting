@@ -1,0 +1,101 @@
+body{
+	font-family:Microsoft YaHei;
+	background-image:url(../img/board3.jpg);
+}
+.container{
+	color: #000;
+	margin: 50px 0px 0px 10px;
+	width:1100px;
+	height:570px;
+	position:relative;
+	overflow: hidden;
+}
+.canvas{ 
+       // background-color:#FFF;
+	position:absolute;
+	top:0px;
+	border:0px #000 solid;
+	box-shadow:2px 2px 2px #444444;
+	cursor:crosshair;
+}
+.column1 { 
+	filter:alpha(Opacity=80);
+	-moz-opacity:0.9;
+	opacity: 0.9;
+        background-color:transparent;
+	position:relative;
+	border:0px #000 solid;
+	display:inline;
+	padding-left:10px;
+	padding-right:10px;
+        float:left;
+        width:200px;
+	height:550px;
+}
+.column2 {overflow:scroll;
+	border:0px #000 solid;
+ 	position:relative;
+	display:inline;
+        float:left;
+        padding-left:0px;
+        width:600px;
+	height:550px;
+}
+.column3 {
+	color: #FFF; 
+	background-color:transparent;
+	-moz-opacity:0.9;
+	opacity: 0.9;
+	border:0px #000 solid;
+	position:relative;
+	display:inline;
+        float:left;
+        padding-left:10px;
+        width:200px;
+	height:550px;
+}
+.column2 > div {
+	margin-bottom:10px;
+}
+.button1 {
+	width : 80px;
+	height : 40px;
+}
+.button2 {
+	width : 30px;
+	height : 30px;
+}
+#pen1{
+	background-image:url(../img/pencil1.png);
+}
+#pen2{
+	background-image:url(../img/pen2.png);
+}
+#pen3{
+	background-image:url(../img/pen3.png);
+}
+#getc1{
+	background-image:url(../img/getcolor1.png);
+}
+#era1{
+	background-image:url(../img/era1.png);
+}
+.nohide{
+	display: none; 
+        visibility: hidden; 
+}
+.hide{
+	display: block; 
+         visibility: visible; 
+         position: absolute; 
+         z-index: 999; 
+         top: 0px; 
+         left: 0px; 
+         width: 1024%; 
+         height: 768%; 
+         background-color: #ccc; 
+         text-align: center; 
+         padding-top: 20%; 
+         filter: alpha(opacity=75); 
+         opacity: 0.75; 
+}

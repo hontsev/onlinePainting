@@ -1,0 +1,229 @@
+﻿<!doctype html>
+<html>
+<head>
+<style type="text/css">
+#container{border:1px solid #ccc;width:800px;height:500px;position:relative;}
+canvas{position:absolute;top:0px;left:0px;z-index:1;}
+
+</style>
+</head>
+<body>
+工具：<div id="nowtool" style="display:inline">无</div>
+<div>
+<button id="b1" type="button" >铅笔</button>
+<button id="b2" type="button" >橡皮</button>
+<button id="b3" type="button" >清空</button>
+</div>
+<div id="container" style="width:800px; float:left;">
+<canvas id="canvas" width="800" height="500"></canvas>
+<canvas id="canvas_temp" style="z-index:2;" width="800" height="500"></canvas>
+</div>
+    <div id="main_layout" style="width:300px; float:left;">
+    	<div style="width:300px; float:left;">
+    	<div id="chatContent" style="height:400px; width:300px;border:solid 1px red;overflow: scroll"></div>
+	   <div>
+		昵称<input id="txtName" type="text" value=""/>
+	   </div>
+	   <div>
+	        消息<input id="txtMsg" type="text" value="" onkeydown="beforesend()"/>
+	        <input type="button" value="发送" onclick="send()"/>
+	   </div>
+    	</div>    			
+    </div>
+
+<div id="infodiv" style="width:300px;">调试信息</div>
+<script src="jquery.min.js"></script>
+<script type="text/javascript"> 
+var hostname = location.hostname,
+serverurl = "ws://127.0.0.1:8000/",
+connection,chatContent,chatBox,uname;
+
+function appendChat(msg)//在屏幕区域的输出
+{	chatContent.html(chatContent.html()+msg+'</br>')	}
+
+	    $(function()
+	    {
+		chatContent = $("#chatContent");
+		chatBox = $("#txtMsg");
+		uname = $("#txtName");
+	        window.WebSocket = window.WebSocket || window.MozWebSocket;
+	        connection = new WebSocket(serverurl);			
+	        connection.onopen = function(){
+			var msg = "已与服务器建立连接";
+	                //log(msg);		
+			appendChat(msg);
+	        };
+	        connection.onerror = function(error)
+	        {
+	            //log("接收或发送消息时遇到了错误");
+	        };
+	        connection.onmessage = function(message)
+	        {        
+	            try 
+	            {
+/*
+ 	      |------a-----b------c---------d-------e1---e2----e3--e4--f------g-------h-------|
+	      |-----a1----a2-----a3--------a4------a5_1------a5_4-----a6-----a7------a8-------|
+信息中的信息   1 通信 - 信息主体 
+	       2 绘画 附加值 笔类型 图层属性 笔半径   笔颜色RGBA      坐标x，  坐标y，  其他。
+	      |-----a1----a2-----a3--------a4------(a5_1-----a5_4----)a6-----a7------a8-------|
+*/
+		var msg = message.data;
+		var px,py,colorr,colorg,colorb,colora,radius,layers,pentype,msgtype,msgvalue,pvalue;
+		var a1=msg.indexOf('a');
+		var a2=msg.indexOf('b');
+		var a3=msg.indexOf('c');
+		var a4=msg.indexOf('d');
+		var a5_1=msg.indexOf('e1');
+		var a5_2=msg.indexOf('e2');
+		var a5_3=msg.indexOf('e3');
+		var a5_4=msg.indexOf('e4');
+		var a6=msg.indexOf('f');
+		var a7=msg.indexOf('g');
+		var a8=msg.indexOf('h');
+		msgtype=msg.substring(0,a1);//笔类型
+
+if(msgtype == 1){//传送文字信息
+	msgvalue=msg.substring(a1+1);
+	appendChat(msgvalue);
+}
+else if(msgtype == 2){//传送画图信息
+	pvalue=msg.substring(a1+1,a2);//附加值,1：画笔起始；2：画笔中段；3：画笔结束
+	px=msg.substring(a6+1,a7);//x坐标
+	py=msg.substring(a7+1,a8);//y坐标
+	colorr=msg.substring(a5_1+1,a5_2);//以下是RGBA
+	colorg=msg.substring(a5_2+1,a5_3);
+	colorb=msg.substring(a5_3+1,a5_4);
+	colora=msg.substring(a5_4+1,a6);
+	layers=msg.substring(a3+1,a4);//图层
+	radius=msg.substring(a4+1,a5_1);//笔半径
+	pentype=msg.substring(a1+1,a3);//笔类型
+	if(pvalue == 1){
+		//画笔起始
+	}
+	if(pvalue == 2){
+		//画笔中段
+		_context.lineTo(px,py);
+		_context.stroke();
+	}
+	if(pvalue == 3){
+		//画笔结束
+		_canvas.onmousemove=null;
+		_canvas.onmouseup=null;
+		updata();
+	}
+
+}
+	            } 
+	            catch (e) 
+	            {
+	                //log('不能被正常解析的数据：', message.data);
+	                return;
+	            }
+	        };
+		connection.onclose = function(e)
+		{log(e);}			
+	    });
+
+function send(){	
+	if(chatBox.val() && uname.val()){
+		connection.send( '1'+'a'+'['+uname.val()+']'+chatBox.val()+'\n');
+		chatBox.val("");
+	}	
+}
+
+function disconnect(){connection.close();}
+
+function beforesend(e){
+	var e = e || window.event;
+	var currKey = e.keyCode || e.which || e.charCode;
+infodiv.innerHTML=currKey;
+	if(currKey == 13)
+	{send();}
+}
+
+var infodiv=document.getElementById('infodiv');
+var canvas = document.getElementById('canvas');
+var context = canvas.getContext('2d');
+var _canvas = document.getElementById('canvas_temp');
+var _context = _canvas.getContext('2d');
+var pen= document.getElementById('b1');
+var era= document.getElementById('b2');
+var clear=document.getElementById('b3');
+var nowtool=document.getElementById('nowtool');
+var Layers,Radius,ColorR,ColorG,ColorB,ColorA,Pentype;//图层，半径，R,G,B,A，笔类型
+
+clear.onclick=function(){//当前画面清空
+	infodiv.innerHTML="已经清空画布ww";
+	context.beginPath();
+	context.closePath();
+	_context.beginPath();
+	_context.closePath();
+	context.clearRect(0, 0, canvas.width, canvas.height);
+	_context.clearRect(0, 0, _canvas.width, _canvas.height);
+};
+
+pen.onclick=function(e){
+	nowtool.innerHTML="铅笔";
+	reset();
+	_canvas.onmousedown=function (e)
+	{
+		_context.moveTo(e.layerX,e.layerY);
+		_canvas.onmousemove=function(e){
+			var nowx=e.layerX;
+			var nowy=e.layerY;
+			connection.send('2'+'a'+'2'+'b'+'1'+'c'+'1'+'d'+'1'+'e1'+'0'+'e2'+'0'+'e3'+'0'+'e4'+'1'+'f'+nowx+'g'+nowy+'h');
+			//_context.lineTo(e.layerX,e.layerY);
+			//_context.stroke();
+		};
+		_canvas.onmouseup=function(e){
+			connection.send('2'+'a'+'3'+'b'+'1'+'c'+'1'+'d'+'1'+'e1'+'0'+'e2'+'0'+'e3'+'0'+'e4'+'1'+'f'+nowx+'g'+nowy+'h');
+			_canvas.onmousemove=null;
+			_canvas.onmouseup=null;
+			updata();
+		};
+	};
+};
+
+era.onclick=function(e){
+	nowtool.innerHTML="橡皮";
+	reset();
+	_canvas.onmousedown=function (e)
+	{
+	context.beginPath();
+	context.closePath();
+	_context.beginPath();
+	_context.closePath();
+	_context.clearRect(0, 0, canvas.width, canvas.height);
+		_context.moveTo(e.layerX,e.layerY);
+		_canvas.onmousemove=function (e)
+		{
+			context.clearRect(e.layerX-12,e.layerY-12,24,24);
+			_context.stroke();
+		};
+		_canvas.onmouseup=function (e)
+		{
+			_canvas.onmousemove=null;
+			_canvas.onmouseup=null;
+			updata();
+		};
+	};
+};
+
+function reset()
+{
+	_canvas.onmousedown=null;
+	_canvas.onmouseup=null;
+	_canvas.onmousemove=null;
+};
+function updata()
+{ 
+	context.drawImage(_canvas, 0, 0);
+	_context.clearRect(0, 0, canvas.width, canvas.height);
+};
+
+
+</script>
+
+</body>
+</html>

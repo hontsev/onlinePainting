@@ -1,0 +1,833 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<head>
+<title>茶绘小屋(´･ω･`)</title>
+<link rel="stylesheet" href="css/farbtastic.css" type="text/css" />
+<link rel="stylesheet" href="css/client.css" type="text/css" />
+<script type="text/javascript" src="js/jquery.js"></script>
+<script type="text/javascript" src="js/farbtastic.js"></script>
+<script language="JavaScript" src="js/slider.js"></script>
+</head>
+
+<body>
+<div class="container" id="main">
+	<div class="column1" unselectable="on" style="-moz-user-select:none;-webkit-user-select:none;" onselectstart="return false;">
+		<div style = "position:relative;display:block;width=150;height=150;">
+			<div id="picker"></div>
+			<form><input type="text" id="color" name="color" value="#123F56" />
+		</div>
+		<div>
+		  <div>
+			<button id="pen1" class="button2" type="button" ></button>
+			<button id="pen2" class="button2" type="button" ></button>
+			<button id="pen3" class="button2" type="button" ></button>
+			<button id="getc1" class="button2" type="button" ></button>
+			<button id="era1" class="button2" type="button" ></button>
+			</br>
+			当前工具：
+			<div id="nowtool" style="display:inline">无</div></br>
+			<canvas id="canvas_penshape"  width="60" height="60" style="box-shadow:2px 1px 1px #444444;background-color:#FFF;"></canvas></br>
+			<button id="cleanbutton" class="button1" type="button" >清空画布</button>
+			
+			<button id="savebutton" class="button1" type="button" >保存画布</button>
+		  </div>
+		  <div>
+			画笔大小<input name="sliderValue" id="penradius" type="Text" size="3" onchange="A_SLIDERS[1].f_setValue(this.value)">
+			<script language="JavaScript">
+	
+				var A_TPL2h = {
+	'b_vertical' : false,
+'b_watch': true,
+'n_controlWidth': 140,
+'n_controlHeight': 16,
+'n_sliderWidth': 19,
+'n_sliderHeight': 16,
+'n_pathLeft' : 0,
+'n_pathTop' : 0,
+'n_pathLength' : 121,
+'s_imgControl': 'img/sldr1v_bg.gif',
+'s_imgSlider': 'img/sldr1v_sl.gif',
+	'n_zIndex': 1
+	}
+	
+				var A_INIT2h = {
+'s_form' : 0,
+'s_name': 'penradius',
+'n_minValue' : 1,
+'n_maxValue' : 100,
+'n_value' : 10,
+'n_step' : 1
+}
+
+	
+				new slider(A_INIT2h, A_TPL2h);
+
+			</script>
+			
+			笔透明度<input name="sliderValue" id="penalpha" type="Text" size="3" onchange="A_SLIDERS[1].f_setValue(this.value)">
+			<script language="JavaScript">
+	
+				var A_TPL2h = {
+	'b_vertical' : false,
+'b_watch': true,
+'n_controlWidth': 140,
+'n_controlHeight': 16,
+'n_sliderWidth': 19,
+'n_sliderHeight': 16,
+'n_pathLeft' : 0,
+'n_pathTop' : 0,
+'n_pathLength' : 121,
+'s_imgControl': 'img/sldr1v_bg.gif',
+'s_imgSlider': 'img/sldr1v_sl.gif',
+'n_zIndex': 1
+	}
+	
+				var A_INIT2h = {
+'s_form' : 0,
+'s_name': 'penalpha',
+'n_minValue' : 10,
+'n_maxValue' : 200,
+'n_value' : 20,
+'n_step' : 1
+	}
+
+	
+				new slider(A_INIT2h, A_TPL2h);
+
+			</script>
+			橡皮大小<input name="sliderValue" id="eraradius" type="Text" size="3" onchange="A_SLIDERS[1].f_setValue(this.value)">
+			<script language="JavaScript">
+	
+				var A_TPL2h = {
+'b_vertical' : false,
+'b_watch': true,
+'n_controlWidth': 140,
+'n_controlHeight': 16,
+'n_sliderWidth': 19,
+'n_sliderHeight': 16,
+'n_pathLeft' : 0,
+'n_pathTop' : 0,'n_pathLength' : 121,
+'s_imgControl': 'img/sldr1v_bg.gif','s_imgSlider': 'img/sldr1v_sl.gif',
+'n_zIndex': 1
+	}
+	
+				var A_INIT2h = {
+'s_form' : 0,
+'s_name': 'eraradius',
+'n_minValue' : 1,
+'n_maxValue' : 100,
+'n_value' : 10,
+'n_step' : 1
+	}
+
+	
+				new slider(A_INIT2h, A_TPL2h);
+
+			</script>
+			图层<input  id="nowlayer" type="Text" size="4" value="1" onkeydown="before_layerset()" />
+			<input type="button"  value="修改" onclick="layerset()"/></br>
+			显示宽度<input  id="canvaslen" type="Text" size="4" value="600" onkeydown="before_canvaslenreset()" />
+			<input type="button"  value="修改" onclick="canvaslenreset()"/>
+		  </div>
+		</div>
+	</div>
+	<div class="column2" id="canvasarea" unselectable="on" style="-moz-user-select:none;-webkit-user-select:none;"  onselectstart="return false;" overflow:scroll>
+		<div id="hideornot" class="nohide" ></div>
+		<div id="maincanvas" style="color:#000;">
+			<canvas id="canvas_bottom" class="canvas" style="background-color:#FFF;" width="2500" height="2000">Σ(っ°Д °;)っ不支持画布！</canvas>
+			<canvas id="canvas_5" class="canvas" width="2500" height="2000"></canvas>
+			<canvas id="canvas_4" class="canvas" width="2500" height="2000"></canvas>
+			<canvas id="canvas_3" class="canvas" width="2500" height="2000"></canvas>
+			<canvas id="canvas_2" class="canvas" width="2500" height="2000"></canvas>
+			<canvas id="canvas_1" class="canvas" width="2500" height="2000"></canvas>
+		</div>
+	</div>
+	<div class="column3" unselectable="on" style="-moz-user-select:none;-webkit-user-select:none;" onselectstart="return false;">
+		<div>
+			<input  id="hostipset" type="Text" size="18" value="172.16.17.190:8000" onkeydown="before_ipreset()"/>
+			<input type="button"  value="连接" onclick="ipreset()"/>
+			<div id="main_layout" style="width:200px; float:left;">
+    			 <div style="width:300px; float:left;">
+			   <div id="memberlist" style="height:90px;width:200px; background-color:#FFF; border:solid 0px #000;overflow:auto;color:#000;"></div>
+    			   在线人数：<div id="membernum" style="display:inline">0</div>
+			   <div id="chatContent" style="height:390px; width:200px; background-color:#FFF; border:solid 0px #000;overflow:auto;color:#000;"></div>
+			   <div>昵称<input id="txtName" type="text" value="某路人"/></div>
+			   <div>消息<input id="txtMsg" type="text" value="" onkeydown="before_send()"/>
+			   	</br><input type="button" class="button1" value="发送" onclick="send()"/>
+			   </div>
+    			 </div>    			
+  		        </div>
+		</div>
+	</div>
+</div>
+<div unselectable="on" style="-moz-user-select:none;-webkit-user-select:none;" onselectstart="return false;">
+	<div id="infodiv" style="width:1000px; color:#FFF">调试信息</div>
+</div>
+
+
+
+<script type="text/javascript"> 
+//注册页面中的 调试信息 和 画笔信息 元素
+var maindiv=document.getElementById('mainconvas');
+var infodiv=document.getElementById('infodiv');
+//注册各种画布及上下文
+var _canvas,_context;
+//var _canvas_0 = document.getElementById('canvas_0');
+var _canvas_1 = document.getElementById('canvas_1');
+var _canvas_2 = document.getElementById('canvas_2');
+var _canvas_3 = document.getElementById('canvas_3');
+var _canvas_4 = document.getElementById('canvas_4');
+var _canvas_5 = document.getElementById('canvas_5');
+var _canvas_bottom = document.getElementById('canvas_bottom');
+var _canvas_penshape = document.getElementById('canvas_penshape');
+//var _context_0 = _canvas_0.getContext('2d');
+var _context_1 = _canvas_1.getContext('2d');
+var _context_2 = _canvas_2.getContext('2d');
+var _context_3 = _canvas_3.getContext('2d');
+var _context_4 = _canvas_4.getContext('2d');
+var _context_5 = _canvas_5.getContext('2d');
+var _context_bottom = _canvas_bottom.getContext('2d');
+var _context_penshape = _canvas_penshape.getContext('2d');
+//注册按钮、换ip消息框等
+var pen= document.getElementById('pen1');
+var pen2= document.getElementById('pen2');
+var pen3= document.getElementById('pen3');
+var era= document.getElementById('era1');
+var clear=document.getElementById('cleanbutton');
+var getcolor=document.getElementById('getc1');
+var showpic=document.getElementById('savebutton');
+var nowtool=document.getElementById('nowtool');
+var nowip=document.getElementById('hostipset');
+var memberlist=document.getElementById('memberlist');
+//注册画布和画笔基本信息（全局变量）
+var Layers,Radius,Radius2,ColorA,Pentype;		//图层，半径，R,G,B,A，笔类型
+var pastx,pasty,nowx,nowy;				//记录坐标的全局变量
+var colorlist = document.getElementById('color');	//调色区
+var colorvalue = colorlist.value.substring(1,7);	//调色区的16进制颜色值
+var penshapeimg1=new Image();
+penshapeimg1.src="img/penshape1.png";
+//
+var hostname = location.hostname,
+serverurl = "ws://172.16.17.190:8000",connection;
+var chatContent = $("#chatContent");
+var chatBox = $("#txtMsg");
+var uname = $("#txtName");
+var pradius = $("#pradius");
+var pradiusera = $("#pradius2");
+var thealpha = $("#pradius3");
+var heightsum = 0;
+
+//初始化
+$(document).ready(function(){
+console.log('hello=w=');
+	//初始化全局变量值
+	Layers = 1;
+	Radius = 1;
+	Radius2 = 10;
+	ColorA = 4;
+	Pentype = 1;	
+	//隐藏输入框 美化界面
+ 	$("#penradius").hide();
+ 	$("#eraradius").hide();
+ 	$("#penalpha").hide();
+	$('#demo').hide();   
+	$('#picker').farbtastic('#color');
+	$('#memberlist').hide();
+	$('#infodiv').hide(); 
+	$('#pen2').hide(); 
+	connectfunc();//连接服务器
+	pen.click();
+	appendChat("★最好使用Chrome或Firefox内核的浏览器，否则绘画有可能变得奇怪。");
+	_context_bottom.fillStyle = '#ffffff';
+	_context_bottom.fillRect(0,0,2500,2000);
+	console.log("pu");
+ }); 
+function connectfunc(){//连接服务器并接收信息
+		var lock = document.getElementById('hideornot'); 
+       	        lock.className = 'hide'; 
+	        window.WebSocket = window.WebSocket || window.MozWebSocket;
+	        connection = new WebSocket(serverurl);			
+	        connection.onopen = function()
+		{	
+			appendChat("★与服务器成功建立连接！绘画愉快！");
+			appendChat("★当前连接服务器IP："+serverurl.substring(5));
+	        };
+	        connection.onerror = function(error)
+	        {
+			appendChat("★与服务器连接断开。");		
+	        };
+	        connection.onmessage = function(message)
+	        {        
+	            try 
+	            {
+			/*
+			信息中的信息   1 通信 信息主体 
+				       2 绘画 附加值 笔类型 图层属性 笔半径   笔颜色16进制     坐标x，  坐标y，  ID。
+				       3 系统信息 值
+			*/
+			var msg = message.data;
+			var endsyn = msg.indexOf('@');
+			var px1,py1,px2,py2,colorv,colora,radius,layers,pentype,msgtype,msgvalue,pvalue;
+			msgtype=msg.substring(0,1);//信息类型
+			if(msgtype == 1)
+			{//传送文字信息
+				msgvalue=msg.substring(1,endsyn);
+				appendChat(msgvalue);
+			}
+			else if(msgtype == 2)
+			{//传送画图信息
+				pvalue=msg.substring(1,2);//附加值,1：画笔起始；2：画笔中段；3：画笔结束
+				pentype=msg.substring(2,3);//笔类型
+				layers=parseInt(msg.substring(3,5));//图层
+				radius=parseInt(msg.substring(5,8));//笔半径
+				colorv=msg.substring(8,14);//颜色
+				colora=parseInt(msg.substring(14,17));//透明度,三位数来表示
+				px1=parseInt(msg.substring(17,21));//x1坐标
+				py1=parseInt(msg.substring(21,25));//y1坐标
+				px2=parseInt(msg.substring(25,29));//x2坐标
+				py2=parseInt(msg.substring(29,33));//y2坐标
+				infodiv.innerHTML="半径："+radius+"坐标x1："+px1+"坐标y1："+py1+"坐标x2："+px2+"坐标y2："+py2+"附加值："+pvalue+"颜色:"+'#'+colorv+"alpha:"+colora/10;
+				if(layers==1){_canvas=_canvas_1;_context=_canvas_1.getContext('2d');}
+				else if(layers==2){_canvas=_canvas_2;_context=_canvas_2.getContext('2d');}
+				else if(layers==3){_canvas=_canvas_3;_context=_canvas_3.getContext('2d');}
+				else if(layers==4){_canvas=_canvas_4;_context=_canvas_4.getContext('2d');}
+				else if(layers==5){_canvas=_canvas_5;_context=_canvas_5.getContext('2d');}
+  			 	 if(pentype == 1)
+				{//铅笔
+					if(pvalue == 1)
+					{
+						//铅笔起始
+						_context.globalAlpha = colora/555/Math.sqrt(radius);
+						if(_context.globalAlpha<0.006)_context.globalAlpha=0.006;
+						_context.fillStyle = '#'+colorv;
+						_context.strokeStyle = '#'+colorv;
+						_context.beginPath();
+						_context.arc(px2,py2,radius/2,0,2*Math.PI);
+						_context.fill();
+						_context.beginPath();
+					}
+					else if(pvalue == 2)
+					{	
+						//铅笔中段
+						_context.globalAlpha = colora/555/Math.sqrt(radius);
+						if(_context.globalAlpha<0.006)_context.globalAlpha=0.006;
+						console.log(_context.globalAlpha);
+						//_context.moveTo(px1,py1);
+						_context.fillStyle = '#'+colorv;
+						var num = parseInt(Math.sqrt(((px1-px2)*(px1-px2)+(py1-py2)*(py1-py2))));
+						console.log(num);
+						//infodiv.innerHTML="num:"+num;
+						for(var n=1;n<=num;n++)
+						{
+							_context.beginPath();
+							_context.arc(px1+(px2-px1)/num*n,py1+(py2-py1)/num*n,radius/2,0,2*Math.PI);
+							_context.fill();
+						}
+					}
+					else if(pvalue == 3)
+					{
+						//铅笔结束
+					}
+    				 }
+				else if(pentype == 3)
+				{//画笔
+					//var tempdata=_context_penshape.getImageData(0,0,60,60);
+					if(pvalue == 1)
+					{
+						//画笔起始
+						_context.globalAlpha = colora/1000;
+						_context.fillStyle = '#'+colorv;
+						//_context.strokeStyle = '#'+colorv;
+						//_context.beginPath();
+						//_context.putImageData(tempdata,px2-radius,py2-radius,0,0,2*radius,2*radius);
+						_context.drawImage(penshapeimg1,px2-radius,py2-radius,2*radius,2*radius);
+					}
+					else if(pvalue == 2)
+					{	
+						//画笔中段
+						//_context.globalAlpha = colora/100/(radius*2);
+						//_context.fillStyle = '#'+colorv;
+						var num = parseInt(Math.sqrt(((px1-px2)*(px1-px2)+(py1-py2)*(py1-py2))));
+						//infodiv.innerHTML="num:"+num;
+						for(var n=1;n<=num;n++)
+						{
+							_context.beginPath();
+							//_context.putImageData(tempdata,0,0,px1+(px2-px1)/num*n-radius,py1+(py2-py1)/num*n-radius,2*radius,2*radius);
+							_context.drawImage(penshapeimg1,px1+(px2-px1)/num*n-radius,py1+(py2-py1)/num*n-radius,2*radius,2*radius);
+						}
+					}
+					else if(pvalue == 3)
+					{
+						//画笔结束
+						//_context.globalAlpha = colora/1000;
+						//_context.fillStyle = '#'+colorv;
+						//_context.drawImage(penshapeimg1,px2-radius,py2-radius,2*radius,2*radius);
+					}
+    				 }
+  			 	else if(pentype == 5)
+				{//铅笔
+					if(pvalue == 1)
+					{
+						//铅笔起始
+						_context.globalAlpha = 1;
+						_context.fillStyle = '#'+colorv;
+						_context.strokeStyle = '#'+colorv;
+						_context.beginPath();
+						_context.arc(px2,py2,radius/2,0,2*Math.PI);
+						_context.fill();
+						_context.beginPath();
+					}
+					else if(pvalue == 2)
+					{	
+						//铅笔中段
+						_context.globalAlpha = 1;
+						//_context.moveTo(px1,py1);
+						_context.fillStyle = '#'+colorv;
+						var num = parseInt(Math.sqrt(((px1-px2)*(px1-px2)+(py1-py2)*(py1-py2))));
+						//infodiv.innerHTML="num:"+num;
+						for(var n=1;n<=num;n++)
+						{
+							_context.beginPath();
+							_context.arc(px1+(px2-px1)/num*n,py1+(py2-py1)/num*n,radius/2,0,2*Math.PI);
+							_context.fill();
+						}
+					}
+					else if(pvalue == 3)
+					{
+						//铅笔结束
+						_context.globalAlpha = 1;
+						_context.fillStyle = '#'+colorv;
+						_context.beginPath();
+					}
+    				 }
+  			         else if(pentype == 2)
+				{//橡皮
+					if(pvalue == 1){
+						//起始
+						_context.beginPath();
+						_context.clearRect(px2-radius/2,py2-radius/2,radius,radius);
+					}
+					else if(pvalue == 2){	
+						//中段
+						for(var n=1;n<=20;n++)
+						{
+							_context.clearRect(px1+(px2-px1)/20*n-radius/2,py1+(py2-py1)/20*n-radius/2,radius,radius);
+						}
+					}
+					else if(pvalue == 3){
+					//结束
+					_context.clearRect(px2-radius/2,py2-radius/2,radius,radius);
+					}
+   				  }
+			}
+			else if(msgtype == 3)
+			{//读取命令
+				msgvalue=msg.substring(1,2);
+				if(msgvalue == 1)
+				{//清屏
+					var msg = "★["+msg.substring(2,endsyn)+"]刚刚清空了画布";	
+					appendChat(msg);
+					_context_1.clearRect(0, 0, _canvas_1.width, _canvas_1.height);
+					_context_2.clearRect(0, 0, _canvas_1.width, _canvas_1.height);
+					_context_3.clearRect(0, 0, _canvas_1.width, _canvas_1.height);
+					_context_4.clearRect(0, 0, _canvas_1.width, _canvas_1.height);
+					_context_5.clearRect(0, 0, _canvas_1.width, _canvas_1.height);
+				}
+				else if(msgvalue == 2)
+				{//用户列表
+					var msg=msg.substring(2,endsyn);
+					memberlist.value="yo!";
+				}
+				else if(msgvalue == 3)
+				{//读取完成通知
+					infodiv.innerHTML="画布读取完成w";
+					var lock = document.getElementById('hideornot'); 
+     				        lock.className = 'nohide'; 
+				}
+				else if(msgvalue == 4)
+				{//在线人数刷新
+					var tmsg=msg.substring(2,endsyn);
+					document.getElementById('membernum').innerHTML=tmsg;
+				}
+			} 
+
+		    }
+	            catch (e) 
+	            {	
+			appendChat("★不能正常解析数据:  "+message.data);
+	                return;
+	            }
+	        };
+		connection.onclose = function(e)
+		{/*infodiv.innerHTML="123close!!";*/}	
+		timeloop();
+	    }
+function updata(x1,y1,x2,y2,r){var tx1,ty1,tx2,ty2,tempimgdata;
+	x1=parseInt(x1);
+	x2=parseInt(x2);
+	y1=parseInt(y1);
+	y2=parseInt(y2);
+	if(x1<=x2){tx1=x1;tx2=x2;}else {tx1=x2;tx2=x1;}
+	if(y1<=y2){ty1=y1;ty2=y2;}else {ty1=y2;ty2=y1;}
+	tx1=tx1-r;
+	ty1=ty1-r;
+	tx2=tx2+r;
+	ty2=ty2+r;
+	_context_0.clearRect(tx1,ty1,tx2-tx1,ty2-ty1);
+	_context_0.drawImage(_canvas_2,tx1,ty1,tx2-tx1,ty2-ty1,tx1,ty1,tx2-tx1,ty2-ty1);
+	_context_0.drawImage(_canvas_1,tx1,ty1,tx2-tx1,ty2-ty1,tx1,ty1,tx2-tx1,ty2-ty1);
+	//tempimgdata=_context_2.getImageData(tx1,ty1,tx2-tx1,ty2-ty1);
+	//_context_0.putImageData(tempimgdata, tx1, ty1);
+	//tempimgdata=_context_1.getImageData(tx1,ty1,tx2-tx1,ty2-ty1);
+	//_context_0.putImageData(tempimgdata, tx1, ty1);
+}
+
+
+function appendChat(msg)//在屏幕上聊天区的的输出
+{	
+	chatContent.html(chatContent.html()+msg+'</br>');
+	chatContent.scrollTop(chatContent.html().toString().length*5);	
+}
+
+function send(){//传输文字
+	if(chatBox.val() && uname.val()){
+		connection.send( '1'+'['+uname.val()+']'+nowtime()+chatBox.val()+'@');
+		chatBox.val("");
+	}	
+}
+
+//function disconnect(){connection.close();}
+
+function before_send(e){//在sendmessage输入栏回车时的处理
+	var e = e || window.event;
+	var currKey = e.keyCode || e.which || e.charCode;
+	infodiv.innerHTML="按键："+currKey;
+	if(currKey == 13)
+	{send();}
+}
+function before_ipreset(e){//在ipreset输入栏回车时的处理
+	var e = e || window.event;
+	var currKey = e.keyCode || e.which || e.charCode;
+	infodiv.innerHTML="按键："+currKey;
+	if(currKey == 13)
+	{ipreset();}
+}
+function before_canvaslenreset(e){//在canvaslenreset输入栏回车时的处理
+	var e = e || window.event;
+	var currKey = e.keyCode || e.which || e.charCode;
+	infodiv.innerHTML="按键："+currKey;
+	if(currKey == 13)
+	{canvaslenreset();}
+}
+function before_layerset(e){//在layerset输入栏回车时的处理
+	var e = e || window.event;
+	var currKey = e.keyCode || e.which || e.charCode;
+	infodiv.innerHTML="按键："+currKey;
+	if(currKey == 13)
+	{layerset();}
+}
+function ipreset(){//修改服务器ip
+	connection.close();
+	chatContent.html("");
+	appendChat("★尝试连接服务器IP： "+nowip.value);
+	//var thevalue=nowip.value;
+	serverurl = "ws://"+nowip.value;
+	_context_1.clearRect(0, 0, _canvas_1.width, _canvas_1.height);
+	_context_2.clearRect(0, 0, _canvas_2.width, _canvas_2.height);
+	_context_3.clearRect(0, 0, _canvas_3.width, _canvas_3.height);
+	_context_4.clearRect(0, 0, _canvas_4.width, _canvas_4.height);
+	_context_5.clearRect(0, 0, _canvas_5.width, _canvas_5.height);
+	connectfunc();
+}
+function canvaslenreset(){//修改canvas显示宽度
+	var nowcanvaslen=document.getElementById('canvaslen').value;
+	if(nowcanvaslen<200)nowcanvaslen=200;
+	else if(nowcanvaslen>850)nowcanvaslen=850;
+	else if(nowcanvaslen>=200 && nowcanvaslen <=850);
+	else nowcanvaslen=600;
+	//alert("nowcanvslen:"+nowcanvaslen);
+	document.getElementById('main').style.width=460+parseInt(nowcanvaslen)+"px";
+	document.getElementById('canvasarea').style.width=nowcanvaslen+"px";
+	document.getElementById('canvaslen').value=nowcanvaslen;
+}
+function layerset(){//修改图层
+	var nowlayervalue=document.getElementById('nowlayer').value;
+	if(nowlayervalue<1)nowlayervalue=1;
+	else if(nowlayervalue>5)nowlayervalue=1;
+	else if(nowlayervalue>=1 && nowlayervalue <=5);
+	else nowlayervalue=1;
+	Layers=nowlayervalue;
+	infodiv.innerHTML="layer:"+nowlayervalue;
+	document.getElementById('nowlayer').value=nowlayervalue;
+}
+function dealbeforesend(){//规范化传输数据
+	Radius=document.getElementById('penradius').value;
+	Radius2=document.getElementById('eraradius').value;
+	ColorA=document.getElementById('penalpha').value;
+	if(Layers.toString().length<2){Layers='0'+Layers;}
+	if(Radius.toString().length<2){Radius='00'+Radius;}else if(Radius.toString().length<3){Radius='0'+Radius;}
+	if(Radius2.toString().length<2){Radius2='00'+Radius2;}else if(Radius2.toString().length<3){Radius2='0'+Radius2;}
+	if(ColorA.toString().length<2){ColorA='00'+ColorA;}else if(ColorA.toString().length<3){ColorA='0'+ColorA;}
+	if(nowx.toString().length<2){nowx='000'+nowx;}else if(nowx.toString().length<3){nowx='00'+nowx;}else if(nowx.toString().length<4){nowx='0'+nowx;}else if(nowx.toString().length>=5){nowx='9999';}
+	if(nowy.toString().length<2){nowy='000'+nowy;}else if(nowy.toString().length<3){nowy='00'+nowy;}else if(nowy.toString().length<4){nowy='0'+nowy;}else if(nowy.toString().length>=5){nowy='9999';}
+	if(pastx.toString().length<2){pastx='000'+pastx;}else if(pastx.toString().length<3){pastx='00'+pastx;}else if(pastx.toString().length<4){pastx='0'+pastx;}else if(pastx.toString().length>=5){pastx='9999';}
+	if(pasty.toString().length<2){pasty='000'+pasty;}else if(pasty.toString().length<3){pasty='00'+pasty;}else if(pasty.toString().length<4){pasty='0'+pasty;}else if(pasty.toString().length>=5){pasty='9999';}
+}
+clear.onclick=function(){//画布清空
+	var r=confirm("将清空当前画布上所有人的绘图信息！你确定要清空画布吗？");
+	if(r==true)
+	{
+		connection.send('3'+'1'+uname.val()+'@');
+	}
+	else{}
+};
+
+pen.onclick=function(e){
+	nowtool.innerHTML="铅笔";
+	Pentype = 1;
+	_canvas_1.onmousedown=function (e)
+	{
+		nowx=e.layerX;
+		nowy=e.layerY;
+		pastx=nowx;
+		pasty=nowy;
+		dealbeforesend();
+		connection.send('2'+'1'+Pentype+Layers+Radius+colorlist.value.substring(1,7)+ColorA+pastx+pasty+nowx+nowy+'@');
+		_canvas_1.onmousemove=function(e){
+			nowx=e.layerX;
+			nowy=e.layerY;
+			dealbeforesend();
+			connection.send('2'+'2'+Pentype+Layers+Radius+colorlist.value.substring(1,7)+ColorA+pastx+pasty+nowx+nowy+'@');
+			pastx=nowx;
+			pasty=nowy;
+		};
+		_canvas_1.onmouseup=function(e){
+			nowx=e.layerX;
+			nowy=e.layerY;
+			dealbeforesend();
+			connection.send('2'+'3'+Pentype+Layers+Radius+colorlist.value.substring(1,7)+ColorA+pastx+pasty+nowx+nowy+'@');
+			pastx=nowx;
+			pasty=nowy;
+			_canvas_1.onmousemove=null;
+			_canvas_1.onmouseup=null;
+		};
+	};
+};
+pen2.onclick=function(e){
+	nowtool.innerHTML="画笔";
+	Pentype = 3;
+	//_context_penshape.clearRect(0,0,_canvas_penshape.width,_canvas_penshape.length);
+	_canvas_1.onmousedown=function (e)
+	{
+		nowx=e.layerX;
+		nowy=e.layerY;
+		pastx=nowx;
+		pasty=nowy;
+		dealbeforesend();
+		connection.send('2'+'1'+Pentype+Layers+Radius+colorlist.value.substring(1,7)+ColorA+pastx+pasty+nowx+nowy+'@');
+		_canvas_1.onmousemove=function(e){
+			nowx=e.layerX;
+			nowy=e.layerY;
+			dealbeforesend();
+			connection.send('2'+'2'+Pentype+Layers+Radius+colorlist.value.substring(1,7)+ColorA+pastx+pasty+nowx+nowy+'@');
+			pastx=nowx;
+			pasty=nowy;
+		};
+		_canvas_1.onmouseup=function(e){
+			nowx=e.layerX;
+			nowy=e.layerY;
+			dealbeforesend();
+			connection.send('2'+'3'+Pentype+Layers+Radius+colorlist.value.substring(1,7)+ColorA+pastx+pasty+nowx+nowy+'@');
+			pastx=nowx;
+			pasty=nowy;
+			_canvas_1.onmousemove=null;
+			_canvas_1.onmouseup=null;
+		};
+	};
+};
+pen3.onclick=function(e){
+	nowtool.innerHTML="二值笔";
+	Pentype = 5;
+	_canvas_1.onmousedown=function (e)
+	{
+		nowx=e.layerX;
+		nowy=e.layerY;
+		pastx=nowx;
+		pasty=nowy;
+		dealbeforesend();
+		connection.send('2'+'1'+Pentype+Layers+Radius+colorlist.value.substring(1,7)+ColorA+pastx+pasty+nowx+nowy+'@');
+		_canvas_1.onmousemove=function(e){
+			nowx=e.layerX;
+			nowy=e.layerY;
+			dealbeforesend();
+			connection.send('2'+'2'+Pentype+Layers+Radius+colorlist.value.substring(1,7)+ColorA+pastx+pasty+nowx+nowy+'@');
+			pastx=nowx;
+			pasty=nowy;
+		};
+		_canvas_1.onmouseup=function(e){
+			nowx=e.layerX;
+			nowy=e.layerY;
+			dealbeforesend();
+			connection.send('2'+'3'+Pentype+Layers+Radius+colorlist.value.substring(1,7)+ColorA+pastx+pasty+nowx+nowy+'@');
+			pastx=nowx;
+			pasty=nowy;
+			_canvas_1.onmousemove=null;
+			_canvas_1.onmouseup=null;
+		};
+	};
+};
+era.onclick=function(e){
+	nowtool.innerHTML="橡皮";
+	Pentype = 2;
+	_context_penshape.clearRect(0,0,_canvas_penshape.width,_canvas_penshape.length);
+	_canvas_1.onmousedown=function (e)
+	{
+		nowx=e.layerX;
+		nowy=e.layerY;
+		pastx=nowx;
+		pasty=nowy;
+		dealbeforesend();
+		connection.send('2'+'1'+Pentype+Layers+Radius2+colorlist.value.substring(1,7)+ColorA+pastx+pasty+nowx+nowy+'@');
+		_canvas_1.onmousemove=function(e){
+			nowx=e.layerX;
+			nowy=e.layerY;
+			dealbeforesend();
+			connection.send('2'+'2'+Pentype+Layers+Radius2+colorlist.value.substring(1,7)+ColorA+pastx+pasty+nowx+nowy+'@');
+			pastx=nowx;
+			pasty=nowy;
+		};
+		_canvas_1.onmouseup=function(e){
+			nowx=e.layerX;
+			nowy=e.layerY;
+			dealbeforesend();
+			connection.send('2'+'3'+Pentype+Layers+Radius2+colorlist.value.substring(1,7)+ColorA+pastx+pasty+nowx+nowy+'@');
+			pastx=nowx;
+			pasty=nowy;
+			_canvas_1.onmousemove=null;
+			_canvas_1.onmouseup=null;
+		};
+	};
+
+};
+getcolor.onclick=function(e){
+	nowtool.innerHTML="取色棒";
+	Pentype = 4;
+	var tempgetcolor,finalgetcolor="#";
+	var colorchange= new Array("0","1","2","3","4","5","6","7","8","9","a","b","c","d","e","f");
+	_canvas_1.onmousedown=function (e)
+	{
+		nowx=e.layerX;
+		nowy=e.layerY;
+		var colordata=_context_bottom.getImageData(nowx,nowy,1,1).data;
+		if(_context_5.getImageData(nowx,nowy,1,1).data[3]!=0)colordata=_context_5.getImageData(nowx,nowy,1,1).data;
+		if(_context_4.getImageData(nowx,nowy,1,1).data[3]!=0)colordata=_context_4.getImageData(nowx,nowy,1,1).data;
+		if(_context_3.getImageData(nowx,nowy,1,1).data[3]!=0)colordata=_context_3.getImageData(nowx,nowy,1,1).data;
+		if(_context_2.getImageData(nowx,nowy,1,1).data[3]!=0)colordata=_context_2.getImageData(nowx,nowy,1,1).data;
+		if(_context_1.getImageData(nowx,nowy,1,1).data[3]!=0)colordata=_context_1.getImageData(nowx,nowy,1,1).data;
+		console.log(colordata[0]+","+colordata[1]+","+colordata[2]+","+colordata[3]);
+		if(colordata[0]>123&&colordata[1]>123&&colordata[2]>123)
+		$('#color').css({color:'#000' });
+		else 
+		$('#color').css({color:'#FFF'});
+		//finalgetcolor=colordata[0];
+		tempgetcolor=colordata[0];
+		finalgetcolor="#";
+		finalgetcolor=finalgetcolor+colorchange[parseInt(tempgetcolor/16)];
+		finalgetcolor=finalgetcolor+colorchange[parseInt(tempgetcolor%16)];
+		tempgetcolor=colordata[1];
+		finalgetcolor=finalgetcolor+colorchange[parseInt(tempgetcolor/16)];
+		finalgetcolor=finalgetcolor+colorchange[parseInt(tempgetcolor%16)];
+		tempgetcolor=colordata[2];
+		finalgetcolor=finalgetcolor+colorchange[parseInt(tempgetcolor/16)];
+		finalgetcolor=finalgetcolor+colorchange[parseInt(tempgetcolor%16)];
+		$('#color').val(finalgetcolor);
+
+		$('#color').css({
+       		 backgroundColor: finalgetcolor
+     		 });
+		console.log("zhe");
+		//tempgetcolor=colordata[3];
+		//finalgetcolor=finalgetcolor+colorchange[parseInt(tempgetcolor/16)];
+		//finalgetcolor=finalgetcolor+colorchange[parseInt(tempgetcolor%16)];
+		
+		infodiv.innerHTML="取色:"+finalgetcolor;
+	};
+	
+}
+showpic.onclick=function(){//保存图片到新页面
+	_context_bottom.drawImage(_canvas_2,0,0,2500,2000);
+	_context_bottom.drawImage(_canvas_1,0,0,2500,2000);
+	var image = _canvas_bottom.toDataURL("image/png");
+	var w=window.open('about:blank','image from canvas'); 
+	w.document.write("<img src='"+image+"' alt='from canvas'/>"); 
+	_context_bottom.clearRect(0,0,2500,2000);
+}
+function nowtime(){//获取时间并返回带时分秒的字符串
+	var today=new Date();
+	var h=today.getHours();
+	var m=today.getMinutes();
+	if(m<10)m='0'+m;
+	var s=today.getSeconds();
+	if(s<10)s='0'+s;
+	var timestring='('+h+":"+m+":"+s+')';
+	return timestring;
+}
+var t;
+function timeloop(){//时间循环..设置画笔样式
+	
+	if(Pentype==1)
+	{
+		_context_penshape.clearRect(0,0,60,60);
+		_context_penshape.beginPath();
+		_context_penshape.globalAlpha = 1;
+		_context_penshape.fillStyle = '#'+colorlist.value.substring(1,7);
+		_context_penshape.arc(_canvas_penshape.width/2,_canvas_penshape.width/2,document.getElementById('penradius').value,0,2*Math.PI);
+		_context_penshape.fill();
+	}
+	else if(Pentype==3)
+	{
+		_context_penshape.clearRect(0,0,60,60);
+		_context_penshape.drawImage(penshapeimg1,0,0,_canvas_penshape.width,_canvas_penshape.width);/*
+		var tempdata=_context_penshape.getImageData(0,0,60,60);
+		var r=parseInt("0x"+colorlist.value.substring(1,3));
+		var g=parseInt("0x"+colorlist.value.substring(3,5));
+		var b=parseInt("0x"+colorlist.value.substring(5,7)); 
+		infodiv.innerHTML=r+"."+g+"."+b;
+		//infodiv.innerHTML=".............";
+		
+		for (var i=0;i<tempdata.data.length;i+=4)
+ 		{
+ 			//if(tempdata.data[i]>=0||tempdata.data[i]<=255)
+			tempdata.data[i]=r;
+ 			//if(tempdata.data[i+1]>=0||tempdata.data[i+1]<=255)
+			tempdata.data[i+1]=g;
+ 			//if(tempdata.data[i+2]>=0||tempdata.data[i+2]<=255)
+			tempdata.data[i+2]=b;
+			//tempdata.data[i+3]=ColorA;
+ 		}
+		_context_penshape.putImageData(tempdata,0,0);*/
+	}
+	else if(Pentype==2||Pentype==4)
+	{
+		_context_penshape.clearRect(0,0,60,60);
+	}
+	else if(Pentype==5)
+	{
+		_context_penshape.clearRect(0,0,60,60);
+		_context_penshape.beginPath();
+		_context_penshape.globalAlpha = 1;
+		_context_penshape.fillStyle = '#'+colorlist.value.substring(1,7);
+		_context_penshape.arc(_canvas_penshape.width/2,_canvas_penshape.width/2,document.getElementById('penradius').value,0,2*Math.PI);
+		_context_penshape.fill();
+	}
+	//sendmyid();
+	//connection.send('1'+'1'+uname.val()+'@');
+	t=setTimeout("timeloop()",200);
+	
+}
+
+//$(timeloop());
+</script>
+</body>
+</html>
